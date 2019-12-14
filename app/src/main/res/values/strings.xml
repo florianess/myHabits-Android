@@ -2,6 +2,16 @@
     <string name="app_name">myHabits</string>
     <string name="title_home">Accueil</string>
     <string name="title_stats">Stats</string>
-    <string name="title_profil">Profil</string>
     <string name="add">Ajouter</string>
+    <string name="title">Titre</string>
+    <string name="desc">Description</string>
+    <string name="categorie">Catégorie :</string>
+    <string name="repetition">Répétition :</string>
+    <string name="sport">Sport</string>
+    <string name="relaxation">Relaxation</string>
+    <string name="cours">Cours</string>
+    <string name="rangement">Rangement</string>
+    <string name="every">Quotidien</string>
+    <string name="hebdo">Hebdomadaire</string>
+    <string name="once">Unique</string>
 </resources>
