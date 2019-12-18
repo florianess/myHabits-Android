@@ -1,19 +1,29 @@
 package fr.utt.myhabits.ui.home;
 
+import android.app.Application;
+
+import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
-public class HomeViewModel extends ViewModel {
+import java.util.List;
 
-    private MutableLiveData<String> mText;
+import fr.utt.myhabits.data.AppRepository;
+import fr.utt.myhabits.data.entities.Habit;
 
-    public HomeViewModel() {
-        mText = new MutableLiveData<>();
-        mText.setValue("This is home fragment");
+public class HomeViewModel extends AndroidViewModel {
+
+    private AppRepository mRepository;
+    private LiveData<List<Habit>> mAllHabits;
+
+    public HomeViewModel(Application application) {
+        super(application);
+        mRepository = new AppRepository(application);
+        mAllHabits = mRepository.getAllHabits();
     }
 
-    public LiveData<String> getText() {
-        return mText;
-    }
+    public LiveData<List<Habit>> getAllHabits() { return mAllHabits; }
+
+    public void insert(Habit habit) { mRepository.insert(habit); }
 }

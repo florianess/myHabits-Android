@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.view.MenuItem;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
@@ -29,6 +30,14 @@ public class MainActivity extends AppCompatActivity {
             .replace(R.id.content, fragment)
                 .addToBackStack(null)
             .commit();
+    }
+
+    @Override
+    public void onBackPressed() {
+        FloatingActionButton fab = findViewById(R.id.floating_add);
+        if (fab != null) {
+            fab.setExpanded(false);
+        }
     }
 
     private BottomNavigationView.OnNavigationItemSelectedListener mOnNavItem
