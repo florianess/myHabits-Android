@@ -12,6 +12,7 @@ import java.util.List;
 
 import fr.utt.myhabits.R;
 import fr.utt.myhabits.data.entities.Habit;
+import fr.utt.myhabits.data.entities.WeekHabits;
 
 public class HabitsListAdapter extends RecyclerView.Adapter<HabitsListAdapter.HabitsViewHolder> {
 
@@ -32,6 +33,7 @@ public class HabitsListAdapter extends RecyclerView.Adapter<HabitsListAdapter.Ha
 
     private final LayoutInflater mInflater;
     private List<Habit> mHabits;
+    private WeekHabits mWeekHabits;
 
     public HabitsListAdapter(Context context) { mInflater = LayoutInflater.from(context); }
 
@@ -45,19 +47,22 @@ public class HabitsListAdapter extends RecyclerView.Adapter<HabitsListAdapter.Ha
     public void onBindViewHolder(HabitsViewHolder holder, int position) {
         if (mHabits != null) {
             Habit current = mHabits.get(position);
-            System.out.println(current);
             holder.titleText.setText(current.getName());
             holder.descText.setText(current.getDescription());
             holder.categoryText.setText(current.getCategory());
             holder.repetitionText.setText(current.getRepetitionLabel());
         } else {
-            // Covers the case of data not being ready yet.
             holder.titleText.setText("No Habit");
         }
     }
 
     void setHabits(List<Habit> habits){
         mHabits = habits;
+        notifyDataSetChanged();
+    }
+
+    void setWeekHabits(WeekHabits weekHabits) {
+        mWeekHabits = weekHabits;
         notifyDataSetChanged();
     }
 
