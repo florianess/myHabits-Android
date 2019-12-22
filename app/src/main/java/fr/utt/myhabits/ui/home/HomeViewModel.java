@@ -63,4 +63,6 @@ public class HomeViewModel extends AndroidViewModel {
     }
 
     public void insertHabit(Habit habit) { mRepository.insertHabit(habit); }
+
+    public void insertWeekHabits(WeekHabits weekHabits) { mRepository.insertWeekHabits(weekHabits); }
 }

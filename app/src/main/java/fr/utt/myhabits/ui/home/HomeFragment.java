@@ -1,9 +1,11 @@
 package fr.utt.myhabits.ui.home;
 
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.CheckBox;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 
@@ -18,6 +20,8 @@ import com.google.android.material.button.MaterialButton;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.textfield.TextInputEditText;
 
+import java.lang.reflect.Array;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.List;
 
@@ -70,32 +74,41 @@ public class HomeFragment extends Fragment {
             }
         });
         MaterialButton addButton = root.findViewById(R.id.button_add);
-        addButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                RadioButton categoryRadio = root.findViewById(categoryGroup.getCheckedRadioButtonId());
-                RadioButton repetitionRadio = root.findViewById(repetitionGroup.getCheckedRadioButtonId());
-                Calendar calendar = Calendar.getInstance();
-                String repetitionLabel = repetitionRadio.getText().toString();
-                String category = categoryRadio.getText().toString();
-                String repetition = "every";
-                int currentDay = calendar.get(Calendar.DAY_OF_WEEK);
-                if (repetitionLabel == "Hebdomadaire") {
-                    repetition = String.valueOf(currentDay);
-                } else if (repetitionLabel == "Unique") {
-                    repetition = String.valueOf(calendar.get(Calendar.DAY_OF_YEAR));
-                }
-                Habit habit = new Habit(
-                        title.getText().toString(),
-                        desc.getText().toString(),
-                        category,
-                        repetitionLabel,
-                        repetition
-                );
-                homeViewModel.insertHabit(habit);
-                System.out.println(title.getText() + " " + desc.getText() + " " + categoryRadio.getText() + " " + repetitionRadio.getText());
-                fab.setExpanded(false);
+        addButton.setOnClickListener(view -> {
+            RadioButton categoryRadio = root.findViewById(categoryGroup.getCheckedRadioButtonId());
+            RadioButton repetitionRadio = root.findViewById(repetitionGroup.getCheckedRadioButtonId());
+            Calendar calendar = Calendar.getInstance();
+            String repetitionLabel = repetitionRadio.getText().toString();
+            String category = categoryRadio.getText().toString();
+            String repetition = "every";
+            int currentDay = calendar.get(Calendar.DAY_OF_WEEK);
+            if (repetitionLabel == "Hebdomadaire") {
+                repetition = String.valueOf(currentDay);
+            } else if (repetitionLabel == "Unique") {
+                repetition = String.valueOf(calendar.get(Calendar.DAY_OF_YEAR));
             }
+            Habit habit = new Habit(
+                    title.getText().toString(),
+                    desc.getText().toString(),
+                    category,
+                    repetitionLabel,
+                    repetition
+            );
+            if (currentWeekHabits == null) {
+                int weekNumber = calendar.get(Calendar.WEEK_OF_YEAR);
+                String[] totalHabits = new String[] {"0", "0", "0", "0", "0", "0", "0"};
+                String[] habitsDone = new String[] {"", "", "", "", "", "", ""};
+                totalHabits[currentDay-1] = "1";
+                WeekHabits weekHabits = new WeekHabits(
+                        weekNumber,
+                        TextUtils.join(",", totalHabits),
+                        TextUtils.join(",", habitsDone)
+                );
+                homeViewModel.insertWeekHabits(weekHabits);
+            }
+            homeViewModel.insertHabit(habit);
+            System.out.println(title.getText() + " " + desc.getText() + " " + categoryRadio.getText() + " " + repetitionRadio.getText());
+            fab.setExpanded(false);
         });
         return root;
     }
