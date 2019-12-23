@@ -3,10 +3,7 @@ package fr.utt.myhabits.data;
 import android.app.Application;
 
 import androidx.lifecycle.LiveData;
-import androidx.lifecycle.Transformations;
 
-import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.List;
 
 import fr.utt.myhabits.data.dao.HabitDao;

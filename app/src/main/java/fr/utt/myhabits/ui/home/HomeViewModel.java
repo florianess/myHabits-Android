@@ -6,9 +6,10 @@ import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.Transformations;
 
-import java.util.ArrayList;
-import java.util.Calendar;
+import java.time.LocalDate;
+import java.time.temporal.WeekFields;
 import java.util.List;
+import java.util.Locale;
 
 import fr.utt.myhabits.data.AppRepository;
 import fr.utt.myhabits.data.entities.Habit;
@@ -19,36 +20,21 @@ public class HomeViewModel extends AndroidViewModel {
     private AppRepository mRepository;
     private LiveData<List<Habit>> mAllHabits;
     private LiveData<List<WeekHabits>> mAllWeekHabits;
-    private Calendar calendar;
 
     public HomeViewModel(Application application) {
         super(application);
         mRepository = new AppRepository(application);
         mAllHabits = mRepository.getAllHabits();
         mAllWeekHabits = mRepository.getAllWeekHabits();
-        calendar = Calendar.getInstance();
     }
 
-    public LiveData<List<Habit>> getTodayHabits() {
-        LiveData<List<Habit>> todayHabits = Transformations.map(mAllHabits, data -> filterHabits(data));
-        return todayHabits;
-    }
-
-    List<Habit> filterHabits(List<Habit> list) {
-        List<Habit> habits = new ArrayList<>();
-        int currentDay = calendar.get(Calendar.DAY_OF_WEEK);
-        int exactDay = calendar.get(Calendar.DAY_OF_YEAR);
-        for (Habit habit : list) {
-            String habitRep = habit.getRepetition();
-            if (habitRep.equals("every") || habitRep.equals(String.valueOf(currentDay)) || habitRep.equals(String.valueOf(exactDay))) {
-                habits.add(habit);
-            }
-        }
-        return habits;
+    public LiveData<List<Habit>> getAllHabits() {
+        return mAllHabits;
     }
 
     public LiveData<WeekHabits> currentWeek() {
-        int weekNumber = calendar.get(Calendar.WEEK_OF_YEAR);
+        WeekFields weekFields = WeekFields.of(Locale.getDefault());
+        int weekNumber = LocalDate.now().get(weekFields.weekOfWeekBasedYear());
         LiveData<WeekHabits> weekHabits = Transformations.map(mAllWeekHabits, data -> selectWeek(data, weekNumber));
         return weekHabits;
     }

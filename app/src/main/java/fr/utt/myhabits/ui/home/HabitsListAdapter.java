@@ -2,6 +2,7 @@ package fr.utt.myhabits.ui.home;
 
 import android.content.Context;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -10,8 +11,8 @@ import android.widget.TextView;
 
 import androidx.recyclerview.widget.RecyclerView;
 
-import org.w3c.dom.Text;
-
+import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.List;
@@ -77,6 +78,21 @@ public class HabitsListAdapter extends RecyclerView.Adapter<HabitsListAdapter.Ha
     void setHabits(List<Habit> habits){
         mHabits = habits;
         notifyDataSetChanged();
+    }
+
+    void filterHabits(List<Habit> habits, LocalDate date) {
+        Log.d("OUI", "FILTER");
+        List<Habit> filterHabits = new ArrayList<>();
+        int currentDay = date.getDayOfWeek().getValue();
+        int exactDay = date.getDayOfYear();
+        for (Habit habit : habits) {
+            String habitRep = habit.getRepetition();
+            if (habitRep.equals("every") || habitRep.equals(String.valueOf(currentDay)) || habitRep.equals(String.valueOf(exactDay))) {
+                filterHabits.add(habit);
+            }
+        }
+        Log.d("HAB", String.valueOf(habits.size()));
+        setHabits(filterHabits);
     }
 
     void setWeekHabits(WeekHabits weekHabits) {
