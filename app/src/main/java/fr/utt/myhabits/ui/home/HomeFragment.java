@@ -23,16 +23,16 @@ import com.google.android.material.button.MaterialButton;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.textfield.TextInputEditText;
 
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.List;
 
+import fr.utt.myhabits.MainActivity;
 import fr.utt.myhabits.R;
 import fr.utt.myhabits.data.entities.Habit;
 import fr.utt.myhabits.data.entities.WeekHabits;
 
-public class HomeFragment extends Fragment {
+public class HomeFragment extends Fragment implements MainActivity.OnBackPressedListener {
 
     private HomeViewModel homeViewModel;
     private HabitsListAdapter adapter;
@@ -40,9 +40,11 @@ public class HomeFragment extends Fragment {
     private TextInputEditText desc;
     private RadioGroup categoryGroup;
     private RadioGroup repetitionGroup;
+    private FloatingActionButton fab;
     private WeekHabits currentWeekHabits;
     private List<Habit> mAllHabits;
-    private LocalDate cursor;
+    private List<WeekHabits> mAllWeekHabits;
+    private Calendar cursor;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
@@ -56,25 +58,26 @@ public class HomeFragment extends Fragment {
         categoryGroup = root.findViewById(R.id.category);
         repetitionGroup = root.findViewById(R.id.repetition);
         RecyclerView recyclerView = root.findViewById(R.id.habitsList);
-        cursor = LocalDate.now();
+        cursor = Calendar.getInstance();
         getActivity().setTitle("Aujourd'hui");
 
-        adapter = new HabitsListAdapter(getActivity());
+        adapter = new HabitsListAdapter(getActivity(), this);
         recyclerView.setAdapter(adapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
 
-        final FloatingActionButton fab = root.findViewById(R.id.floating_add);
+        fab = root.findViewById(R.id.floating_add);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                getActivity().setTitle("Ajouter une habitude");
                 fab.setExpanded(true);
             }
         });
-        homeViewModel.currentWeek().observe(this, new Observer<WeekHabits>() {
+        homeViewModel.getAllWeekHabits().observe(this, new Observer<List<WeekHabits>>() {
             @Override
-            public void onChanged(WeekHabits weekHabits) {
-                currentWeekHabits = weekHabits;
-                adapter.setWeekHabits(weekHabits);
+            public void onChanged(List<WeekHabits> listWeekHabits) {
+                mAllWeekHabits = listWeekHabits;
+                currentWeekHabits = adapter.filterWeekHabits(listWeekHabits, cursor);
             }
         });
         homeViewModel.getAllHabits().observe(this, new Observer<List<Habit>>() {
@@ -120,6 +123,7 @@ public class HomeFragment extends Fragment {
             }
             homeViewModel.insertHabit(habit);
             Log.d("NEW HABIT", title.getText() + " " + desc.getText() + " " + category + " " + repetitionLabel + " " + repetition);
+            setTitle();
             fab.setExpanded(false);
         });
 
@@ -134,8 +138,20 @@ public class HomeFragment extends Fragment {
         return root;
     }
 
-    static public void filterHabits(List<Habit> habits) {
+    public void setTitle() {
+        SimpleDateFormat formatter = new SimpleDateFormat("E dd MMMM");
+        String title = formatter.format(cursor.getTime());
+        if (cursor.get(Calendar.DAY_OF_YEAR) == Calendar.getInstance().get(Calendar.DAY_OF_YEAR)) {
+            title = "Aujourd'hui";
+        }
+        getActivity().setTitle(title);
+    }
 
+    @Override
+    public boolean onBackPressed() {
+        fab.setExpanded(false);
+        setTitle();
+        return true;
     }
 
     class CustomGestureListener extends GestureDetector.SimpleOnGestureListener {
@@ -149,18 +165,14 @@ public class HomeFragment extends Fragment {
             float deltaXabs = Math.abs(deltaX);
             if (deltaXabs >= MIN_SWIPE && deltaXabs < MAX_SWIPE) {
                 if (deltaX > 0) {
-                    cursor = cursor.plusDays(1);
+                    cursor.add(Calendar.DAY_OF_MONTH, 1);
                 } else {
-                    cursor = cursor.minusDays(1);
+                    cursor.add(Calendar.DAY_OF_MONTH, -1);
                 }
             }
-            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd MMMM");
-            String title = formatter.format(cursor);
-            if (cursor.equals(LocalDate.now())) {
-                title = "Aujourd'hui";
-            }
-            getActivity().setTitle(title);
+            setTitle();
             adapter.filterHabits(mAllHabits, cursor);
+            adapter.filterWeekHabits(mAllWeekHabits, cursor);
 
             return super.onFling(event1, event2, velocityX, velocityY);
         }

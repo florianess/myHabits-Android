@@ -1,5 +1,7 @@
 package fr.utt.myhabits.data.entities;
 
+import android.util.Log;
+
 import androidx.annotation.NonNull;
 import androidx.room.ColumnInfo;
 import androidx.room.Entity;
@@ -34,5 +36,20 @@ public class WeekHabits {
 
     public String getHabitsDone() {
         return habitsDone;
+    }
+
+    public void setTotalHabits(String totalHabits) {
+        this.totalHabits = totalHabits;
+    }
+
+    public void setHabitsDone(String habitsDone) {
+        this.habitsDone = habitsDone;
+    }
+
+    public void display() {
+        Log.d("WEEK HABIT",
+                getWeekNumber() +
+                getHabitsDone() +
+                getTotalHabits());
     }
 }

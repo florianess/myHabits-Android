@@ -43,4 +43,10 @@ public class AppRepository {
             mWeekHabitsDao.insert(weekHabits);
         });
     }
+
+    public void updateWeekHabits(final WeekHabits weekHabits) {
+        AppDatabase.databaseWriteExecutor.execute(() -> {
+            mWeekHabitsDao.update(weekHabits);
+        });
+    }
 }
