@@ -41,9 +41,9 @@
                     android:orientation="vertical">
 
                     <com.google.android.material.textfield.TextInputLayout
+                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                         android:hint="@string/title"
                         android:textColorHint="@android:color/white">
 
@@ -51,7 +51,7 @@
                             android:id="@+id/title"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:textColor="@android:color/white"/>
+                            android:textColor="@android:color/white" />
 
                     </com.google.android.material.textfield.TextInputLayout>
 
@@ -80,15 +80,15 @@
                         android:id="@+id/category"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:orientation="vertical">
+                        android:orientation="horizontal">
 
                         <RadioButton
                             android:id="@+id/radioButton"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
+                            android:checked="true"
                             android:text="@string/cours"
-                            android:textColor="@android:color/white"
-                            android:checked="true"/>
+                            android:textColor="@android:color/white" />
 
                         <RadioButton
                             android:id="@+id/radioButton2"
@@ -122,15 +122,15 @@
                         android:id="@+id/repetition"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:orientation="vertical">
+                        android:orientation="horizontal">
 
                         <RadioButton
                             android:id="@+id/radioButton5"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
+                            android:checked="true"
                             android:text="@string/every"
-                            android:textColor="@android:color/white"
-                            android:checked="true"/>
+                            android:textColor="@android:color/white" />
 
                         <RadioButton
                             android:id="@+id/radioButton6"
@@ -146,17 +146,21 @@
                             android:text="@string/once"
                             android:textColor="@android:color/white" />
                     </RadioGroup>
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/button_add"
+                        style="@style/Widget.MaterialComponents.Button"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="bottom|center_horizontal"
+                        android:layout_weight="0"
+                        android:gravity="bottom"
+                        android:text="@string/add"
+                        android:textAppearance="@style/TextAppearance.MaterialComponents.Button" />
+
                 </LinearLayout>
 
 
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/button_add"
-                    style="@style/Widget.MaterialComponents.Button"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="bottom|center_horizontal"
-                    android:text="@string/add"
-                    android:textAppearance="@style/TextAppearance.MaterialComponents.Button" />
             </LinearLayout>
 
         </com.google.android.material.circularreveal.CircularRevealFrameLayout>

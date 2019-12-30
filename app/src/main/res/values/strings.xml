@@ -14,4 +14,11 @@
     <string name="every">Quotidien</string>
     <string name="hebdo">Hebdomadaire</string>
     <string name="once">Unique</string>
+    <string name="overview">Vue d\'ensemble</string>
+    <string name="score">Score</string>
+    <string name="Month" >Mois</string>
+    <string name="Year">Année</string>
+    <string name="Total">Total</string>
+    <string name="habit_graph_title">Force de l\'habitude</string>
+    <string name="Done">Fait :</string>
 </resources>
