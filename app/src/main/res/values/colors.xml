@@ -3,4 +3,8 @@
     <color name="colorPrimary">#008577</color>
     <color name="colorPrimaryDark">#00574B</color>
     <color name="colorAccent">#D81B60</color>
+    <color name="Cours">#05668D</color>
+    <color name="Relaxation">#028090</color>
+    <color name="Sport">#02C39A</color>
+    <color name="Rangement">#F0F3BD</color>
 </resources>

@@ -14,4 +14,5 @@
     <string name="every">Quotidien</string>
     <string name="hebdo">Hebdomadaire</string>
     <string name="once">Unique</string>
+    <string name="futur">Vous ne pouvez pas valider une habitude dans le futur</string>
 </resources>

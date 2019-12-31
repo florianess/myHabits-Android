@@ -1,6 +1,7 @@
 package fr.utt.myhabits.ui.home;
 
 import android.content.Context;
+import android.content.res.Resources;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -13,6 +14,9 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.android.material.snackbar.Snackbar;
+
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -43,24 +47,29 @@ public class HabitsListAdapter extends RecyclerView.Adapter<HabitsListAdapter.Ha
 
         @Override
         public void onClick(View v) {
-            doneCheckBox.setChecked(!doneCheckBox.isChecked());
-            HomeViewModel homeViewModel = ViewModelProviders.of(mFragment).get(HomeViewModel.class);
-            if (doneCheckBox.isChecked()) {
-                todayHabitsDone.add(titleText.getText().toString());
+            if (cursor.after(Calendar.getInstance())) {
+                Snackbar.make(doneCheckBox, R.string.futur, Snackbar.LENGTH_SHORT)
+                        .show();
             } else {
-                List<String> updatedTodayHabits = new ArrayList<>();
-                for (String title: todayHabitsDone) {
-                    if (!title.equals(titleText.getText().toString())) {
-                        updatedTodayHabits.add(title);
+                doneCheckBox.setChecked(!doneCheckBox.isChecked());
+                HomeViewModel homeViewModel = ViewModelProviders.of(mFragment).get(HomeViewModel.class);
+                if (doneCheckBox.isChecked()) {
+                    todayHabitsDone.add(titleText.getText().toString());
+                } else {
+                    List<String> updatedTodayHabits = new ArrayList<>();
+                    for (String title: todayHabitsDone) {
+                        if (!title.equals(titleText.getText().toString())) {
+                            updatedTodayHabits.add(title);
+                        }
                     }
                 }
+                String todayHabitsDoneStr = TextUtils.join("&", todayHabitsDone);
+                int currentDay = cursor.get(Calendar.DAY_OF_WEEK);
+                currentWeekHabits.set(currentDay-1, todayHabitsDoneStr);
+                String currentWeekHabitsStr = TextUtils.join(",", currentWeekHabits);
+                mWeekHabits.setHabitsDone(currentWeekHabitsStr);
+                homeViewModel.updateWeekHabits(mWeekHabits);
             }
-            String todayHabitsDoneStr = TextUtils.join("&", todayHabitsDone);
-            int currentDay = cursor.get(Calendar.DAY_OF_WEEK);
-            currentWeekHabits.set(currentDay-1, todayHabitsDoneStr);
-            String currentWeekHabitsStr = TextUtils.join(",", currentWeekHabits);
-            mWeekHabits.setHabitsDone(currentWeekHabitsStr);
-            homeViewModel.updateWeekHabits(mWeekHabits);
         }
     }
 
@@ -91,12 +100,25 @@ public class HabitsListAdapter extends RecyclerView.Adapter<HabitsListAdapter.Ha
             if (todayHabitsDone != null && todayHabitsDone.contains(current.getName())) {
                 holder.doneCheckBox.setChecked(true);
             }
+            holder.itemView.setBackgroundResource(getResId(current.getCategory()));
+
             holder.titleText.setText(current.getName());
             holder.descText.setText(current.getDescription());
             holder.categoryText.setText(current.getCategory());
             holder.repetitionText.setText(current.getRepetitionLabel());
         } else {
             holder.titleText.setText("No Habit");
+        }
+    }
+
+    int  getResId(String resName) {
+        try {
+            Field idField = R.color.class.getDeclaredField(resName);
+
+            return idField.getInt(idField);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return -1;
         }
     }
 
