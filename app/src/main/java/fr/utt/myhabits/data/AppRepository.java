@@ -32,6 +32,8 @@ public class AppRepository {
 
     public LiveData<List<WeekHabits>> getAllWeekHabits() { return  mAllWeekHabits; }
 
+    public LiveData<WeekHabits> getWeek(int weekNumber) { return mWeekHabitsDao.getWeek(weekNumber); }
+
     public void insertHabit(final Habit habit) {
         AppDatabase.databaseWriteExecutor.execute(() -> {
             mHabitDao.insert(habit);

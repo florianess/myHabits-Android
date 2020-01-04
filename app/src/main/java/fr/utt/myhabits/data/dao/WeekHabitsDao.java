@@ -22,6 +22,9 @@ public interface WeekHabitsDao {
     @Query("SELECT * from week_habits")
     LiveData<List<WeekHabits>> getAll();
 
+    @Query("SELECT * from week_habits where weekNumber = :weekNumber")
+    LiveData<WeekHabits> getWeek(int weekNumber);
+
     @Update
     void update(WeekHabits weekHabits);
 }

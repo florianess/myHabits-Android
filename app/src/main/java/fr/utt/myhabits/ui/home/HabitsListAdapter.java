@@ -42,13 +42,14 @@ public class HabitsListAdapter extends RecyclerView.Adapter<HabitsListAdapter.Ha
             categoryText = itemView.findViewById(R.id.categoryHabit);
             repetitionText = itemView.findViewById(R.id.repetitionHabit);
             doneCheckBox = itemView.findViewById(R.id.checkBox);
+
             itemView.setOnClickListener(this);
         }
 
         @Override
         public void onClick(View v) {
             if (cursor.after(Calendar.getInstance())) {
-                Snackbar.make(doneCheckBox, R.string.futur, Snackbar.LENGTH_SHORT)
+                Snackbar.make(v, R.string.futur, Snackbar.LENGTH_SHORT)
                         .show();
             } else {
                 doneCheckBox.setChecked(!doneCheckBox.isChecked());
@@ -62,6 +63,7 @@ public class HabitsListAdapter extends RecyclerView.Adapter<HabitsListAdapter.Ha
                             updatedTodayHabits.add(title);
                         }
                     }
+                    todayHabitsDone = updatedTodayHabits;
                 }
                 String todayHabitsDoneStr = TextUtils.join("&", todayHabitsDone);
                 int currentDay = cursor.get(Calendar.DAY_OF_WEEK);

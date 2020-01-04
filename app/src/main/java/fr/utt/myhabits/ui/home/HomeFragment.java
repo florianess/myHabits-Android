@@ -24,6 +24,7 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.textfield.TextInputEditText;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 
@@ -111,9 +112,24 @@ public class HomeFragment extends Fragment implements MainActivity.OnBackPressed
             );
             if (currentWeekHabits == null) {
                 int weekNumber = calendar.get(Calendar.WEEK_OF_YEAR);
-                String[] totalHabits = new String[] {"0", "0", "0", "0", "0", "0", "0"};
-                String[] habitsDone = new String[] {"", "", "", "", "", "", ""};
-                totalHabits[currentDay-1] = "1";
+                List<String> totalHabits = new ArrayList<>();
+                List<String> habitsDone = new ArrayList<>();
+                Integer dailyHabits = 0;
+                for (Habit dhabit : mAllHabits) {
+                    if (dhabit.getRepetition().equals("every")) {
+                        dailyHabits ++;
+                    }
+                }
+                if (repetition.equals("every")) {
+                    dailyHabits ++;
+                }
+                for (int i = 0; i < 7; i++) {
+                    totalHabits.add(String.valueOf(dailyHabits));
+                    habitsDone.add("");
+                }
+                if (!repetition.equals("every")) {
+                    totalHabits.set(currentDay, String.valueOf(dailyHabits+1));
+                }
                 WeekHabits weekHabits = new WeekHabits(
                         weekNumber,
                         TextUtils.join(",", totalHabits),

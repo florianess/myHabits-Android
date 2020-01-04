@@ -1,19 +1,27 @@
 package fr.utt.myhabits.ui.stats;
 
+import android.app.Application;
+
+import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
-public class StatsViewModel extends ViewModel {
+import java.util.List;
 
-    private MutableLiveData<String> mText;
+import fr.utt.myhabits.data.AppRepository;
+import fr.utt.myhabits.data.entities.WeekHabits;
 
-    public StatsViewModel() {
-        mText = new MutableLiveData<>();
-        mText.setValue("This is dashboard fragment");
+public class StatsViewModel extends AndroidViewModel {
+
+    private AppRepository mRepository;
+    private LiveData<List<WeekHabits>> mAllWeekHabits;
+
+    public StatsViewModel(Application application) {
+        super(application);
+        mRepository = new AppRepository(application);
+        mAllWeekHabits = mRepository.getAllWeekHabits();
     }
 
-    public LiveData<String> getText() {
-        return mText;
-    }
+    public LiveData<List<WeekHabits>> getAllWeekHabits() { return mAllWeekHabits; }
 }
