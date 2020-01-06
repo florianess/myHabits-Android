@@ -25,6 +25,7 @@ import com.google.android.material.textfield.TextInputEditText;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.List;
 
@@ -128,7 +129,7 @@ public class HomeFragment extends Fragment implements MainActivity.OnBackPressed
                     habitsDone.add("");
                 }
                 if (!repetition.equals("every")) {
-                    totalHabits.set(currentDay, String.valueOf(dailyHabits+1));
+                    totalHabits.set(currentDay-1, String.valueOf(dailyHabits+1));
                 }
                 WeekHabits weekHabits = new WeekHabits(
                         weekNumber,
@@ -136,6 +137,21 @@ public class HomeFragment extends Fragment implements MainActivity.OnBackPressed
                         TextUtils.join(",", habitsDone)
                 );
                 homeViewModel.insertWeekHabits(weekHabits);
+            } else {
+                String strTotalHabits = currentWeekHabits.getTotalHabits();
+                List<String>  totalHabits =  new ArrayList<>(Arrays.asList(TextUtils.split(strTotalHabits, ",")));
+                Log.d("cur", String.valueOf(currentDay));
+                Log.d("on", String.valueOf(totalHabits));
+                if (repetition.equals("every")) {
+                    for (int i = 0; i < 7; i++) {
+                        totalHabits.set(i, String.valueOf(Integer.parseInt(totalHabits.get(i))+1));
+                    }
+                } else {
+                    totalHabits.set(currentDay-1, String.valueOf(Integer.parseInt(totalHabits.get(currentDay-1))+1));
+                }
+                String currentWeekHabitsStr = TextUtils.join(",", totalHabits);
+                currentWeekHabits.setTotalHabits(currentWeekHabitsStr);
+                homeViewModel.updateWeekHabits(currentWeekHabits);
             }
             homeViewModel.insertHabit(habit);
             Log.d("NEW HABIT", title.getText() + " " + desc.getText() + " " + category + " " + repetitionLabel + " " + repetition);

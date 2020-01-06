@@ -1,7 +1,6 @@
 package fr.utt.myhabits.ui.home;
 
 import android.content.Context;
-import android.content.res.Resources;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;

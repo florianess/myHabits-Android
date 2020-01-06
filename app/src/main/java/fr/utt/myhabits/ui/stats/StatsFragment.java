@@ -31,12 +31,14 @@ import com.github.mikephil.charting.formatter.IndexAxisValueFormatter;
 import com.github.mikephil.charting.formatter.ValueFormatter;
 import com.github.mikephil.charting.utils.ColorTemplate;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.List;
 
 import fr.utt.myhabits.R;
+import fr.utt.myhabits.data.entities.Habit;
 import fr.utt.myhabits.data.entities.WeekHabits;
 
 public class StatsFragment extends Fragment {
@@ -49,6 +51,7 @@ public class StatsFragment extends Fragment {
     private TextView textTotal;
     private TextView textDone;
     private List<WeekHabits> mAllWeekHabits;
+    private List<Habit> mAllHabits;
     private WeekHabits currentWeekHabits;
     private Calendar cursor;
 
@@ -73,10 +76,9 @@ public class StatsFragment extends Fragment {
         barChart.setDoubleTapToZoomEnabled(false);
         barChart.getAxisLeft().setGranularity(1f);
         barChart.getAxisLeft().setAxisMinimum(0f);
-        barChart.animateY(1000, Easing.EaseInOutCubic);
+
 
         pieChart.setRotationEnabled(false);
-        pieChart.animateXY(1000, 1000, Easing.EaseInOutCubic);
 
         final GestureDetectorCompat mDetector = new GestureDetectorCompat(getActivity(), new StatsFragment.CustomGestureListener());
         statsViewModel.getAllWeekHabits().observe(this, new Observer<List<WeekHabits>>() {
@@ -84,6 +86,13 @@ public class StatsFragment extends Fragment {
             public void onChanged(List<WeekHabits> listWeekHabits) {
                 mAllWeekHabits = listWeekHabits;
                 filterWeekHabits();
+            }
+        });
+
+        statsViewModel.getAllHabits().observe(this, new Observer<List<Habit>>() {
+            @Override
+            public void onChanged(List<Habit> habits) {
+                mAllHabits = habits;
             }
         });
 
@@ -100,12 +109,19 @@ public class StatsFragment extends Fragment {
     private void filterWeekHabits() {
         Log.d("WEEK", String.valueOf(mAllWeekHabits.size()));
         int weekNumber = cursor.get(Calendar.WEEK_OF_YEAR);
+        Log.d("NUMBER", String.valueOf(weekNumber));
+        WeekHabits newCurrentWeek = null;
         for (WeekHabits week : mAllWeekHabits) {
             if (week.getWeekNumber() == weekNumber) {
                 week.display();
-                currentWeekHabits = week;
-                renderCharts();
+                newCurrentWeek = week;
             }
+        }
+        if (newCurrentWeek != null) {
+            currentWeekHabits = newCurrentWeek;
+            renderCharts();
+        } else {
+            statsViewModel.createWeek(weekNumber, mAllHabits);
         }
     }
 
@@ -126,9 +142,17 @@ public class StatsFragment extends Fragment {
         }
         ArrayList<PieEntry> entries = new ArrayList<>();
         Log.d("total", String.valueOf(totalHabits));
+        SimpleDateFormat sdf = new SimpleDateFormat("dd/MM");
+        Calendar sun = Calendar.getInstance();
+        sun.set(Calendar.WEEK_OF_YEAR, currentWeekHabits.getWeekNumber() - 1);
+        sun.set(Calendar.DAY_OF_WEEK, Calendar.SUNDAY);
+        Calendar sat = Calendar.getInstance();
+        sat.set(Calendar.WEEK_OF_YEAR, currentWeekHabits.getWeekNumber());
+        sat.set(Calendar.DAY_OF_WEEK, Calendar.SATURDAY);
         textWeekNumber.setText("Semaine " + currentWeekHabits.getWeekNumber());
         textTotal.setText("Total habitudes : " + Math.round(totalHabits));
         textDone.setText("Habitudes réalisées : " + Math.round(totalHabitsDone));
+        textDate.setText("Du " + sdf.format(sun.getTime()) + " au " + sdf.format(sat.getTime()));
 
         entries.add(new PieEntry(totalHabitsDone, "Habitudes réalisées"));
         entries.add(new PieEntry(totalHabits - totalHabitsDone, "Habitudes non réalisées"));
@@ -139,7 +163,7 @@ public class StatsFragment extends Fragment {
         PieData pieData = new PieData((pieDataSet));
         pieData.setValueFormatter(new IntFormatter());
         pieChart.setData(pieData);
-        pieChart.refreshDrawableState();
+        pieChart.animateXY(1000, 1000, Easing.EaseInOutCubic);
 
         BarDataSet barDataSet = new BarDataSet(barEntries, "Habitudes réalisées par jour");
         barDataSet.setColor(getResources().getColor(R.color.Sport));
@@ -147,7 +171,7 @@ public class StatsFragment extends Fragment {
         barData.setValueFormatter(new IntFormatter());
         barChart.setData(barData);
         barChart.getXAxis().setValueFormatter(new CustomXAxis());
-        barChart.refreshDrawableState();
+        barChart.animateY(1000, Easing.EaseInOutCubic);
 
     }
 
@@ -162,11 +186,12 @@ public class StatsFragment extends Fragment {
             float deltaXabs = Math.abs(deltaX);
             if (deltaXabs >= MIN_SWIPE && deltaXabs < MAX_SWIPE) {
                 if (deltaX > 0) {
-                    System.out.println("TO LEFT");
+                    cursor.add(Calendar.WEEK_OF_YEAR, 1);
                 } else {
-                    System.out.println("TO RIGHT");
+                    cursor.add(Calendar.WEEK_OF_YEAR, -1);
                 }
             }
+            filterWeekHabits();
             return super.onFling(event1, event2, velocityX, velocityY);
         }
     }
